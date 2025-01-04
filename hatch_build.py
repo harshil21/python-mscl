@@ -31,6 +31,9 @@ class CustomBuildHook(BuildHookInterface):
         We can download & extract the .deb here, and place
         mscl.py and _mscl.so into src/mscl_pip/.
         """
+        if self.target_name != "wheel":
+            return
+
         build_data["pure_python"] = False
         self.app.display_info(f"Running on {version=} and {build_data=}")
         self.app.display_info(self.target_name)
