@@ -25,7 +25,7 @@ from python_mscl import mscl
 
 ### Windows support:
 
-The latest mscl version (v67.0.0) only has a .zip for python 3.11. It is not confirmed if this will work with other python versions.
+The latest mscl version (v67.0.0) only has a .zip for python 3.11. It has been confirmed that it does not work on other python versions (You would get an import error). However the build itself would still go through.
 
 
 ### Versioning system:

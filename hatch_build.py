@@ -1,7 +1,7 @@
 """Specifies a hatch build hook to create the wheel for mscl."""
 
 import platform
-import subprocess
+import shutil
 import sys
 from pathlib import Path
 
@@ -92,13 +92,25 @@ class CustomBuildHook(BuildHookInterface):
         )
 
         self.app.display_success("Downloaded files successfully.")
-        build_data["artifacts"] = ["_mscl.so", "mscl.py"]
 
         # --- STEP 3: Copy the files ("_mscl.so" & "mscl.py") to the src/mscl/ directory: ---
         # Move from root (i.e. cwd) to src/mscl
-        subprocess.run(["mv", "mscl.py", "src/python_mscl/"], check=True)
+        # Use shutil.move() to move the files.
+
+        self.remove_existing_files(Path("src/python_mscl/"), ["_mscl.so", "_mscl.pyd", "mscl.py"])
+        shutil.move("mscl.py", "src/python_mscl/")
         if platform.system() == "Windows":
-            subprocess.run(["mv", "_mscl.pyd", "src/python_mscl/"], check=True)
+            shutil.move("_mscl.pyd", "src/python_mscl/")
+            build_data["artifacts"] = ["_mscl.pyd", "mscl.py"]
         else:
-            subprocess.run(["mv", "_mscl.so", "src/python_mscl/"], check=True)
+            shutil.move("_mscl.so", "src/python_mscl/")
+            build_data["artifacts"] = ["_mscl.so", "mscl.py"]
+
         self.app.display_success("Moved files to src/python_mscl/ successfully. Building wheel...")
+
+    def remove_existing_files(self, directory: Path, files: list[str]) -> None:
+        """Remove the existing files from the directory."""
+        for file in files:
+            file_path = directory / file
+            if file_path.exists():
+                file_path.unlink()
