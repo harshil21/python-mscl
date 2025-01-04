@@ -20,5 +20,5 @@ mscl_release_assets/*.deb
 .vscode/
 
 # Exclude build downloaded mscl files:
-src/mscl/mscl.py
-src/mscl/_mscl.so
+src/python_mscl/mscl.py
+src/python_mscl/_mscl.so
