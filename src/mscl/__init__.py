@@ -1,2 +1,4 @@
-def hello() -> str:
-    return "Hello from mscl!"
+from . import mscl
+
+# So user can do `import mscl` instead of `import mscl.mscl`
+__all__ = ["mscl"]

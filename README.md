@@ -1,4 +1,4 @@
-#python-mscl
+# python-mscl
 
 Unofficial Python bindings for the [Microstrain Communication Library](https://www.microstrain.com/developers/microstrain-communication-library).
 

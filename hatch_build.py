@@ -1,6 +1,7 @@
 """Specifies a hatch build hook to create the wheel for mscl."""
 
 import platform
+import subprocess
 import sys
 from pathlib import Path
 
@@ -65,7 +66,7 @@ class CustomBuildHook(BuildHookInterface):
         folder_name = f"mscl-{arch}-{py_version}-{mscl_ver}"
 
         # b) Use PyGithub to download the files from the folder:
-        self.app.display_info(f"Downloading files for {folder_name}...")
+        self.app.display_waiting(f"Downloading files for {folder_name}...")
 
         gh = GithubDownloader()
         gh.download_assets_from_folder(
@@ -73,4 +74,14 @@ class CustomBuildHook(BuildHookInterface):
             folder_name=f"mscl_release_assets/{folder_name}",
         )
 
-        self.display_info("Downloaded files successfully. Building the wheel...")
+        self.app.display_success("Downloaded files successfully.")
+        build_data["artifacts"] = ["_mscl.so", "mscl.py"]
+
+        # Show all files in the current directory:
+        # self.app.display_info(f"Files in {Path().cwd()}: {list(Path().cwd().iterdir())}")
+
+        # --- STEP 3: Copy the files ("_mscl.so" & "mscl.py") to the src/mscl/ directory: ---
+        # Move from root (i.e. cwd) to src/mscl
+        subprocess.run(["mv", "mscl.py", "src/mscl/"], check=True)  # noqa: S603, S607
+        subprocess.run(["mv", "_mscl.so", "src/mscl/"], check=True)  # noqa: S603, S607
+        self.app.display_success("Moved files to src/mscl/ successfully. Building wheel...")
