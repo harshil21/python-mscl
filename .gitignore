@@ -15,6 +15,7 @@ wheels/
 # Exclude local .deb and .zip files from mscl:
 mscl_release_assets/*.zip
 mscl_release_assets/*.deb
+mscl_release_assets/
 
 # VSCode:
 .vscode/
