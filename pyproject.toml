@@ -1,6 +1,6 @@
 [project]
 name = "python-mscl"
-version = "67.0.0"
+version = "67.0.0.1"
 description = "Easy to install python wrapper for the MSCL library."
 readme = "README.md"
 authors = [
@@ -23,7 +23,10 @@ classifiers = [
 dependencies = []
 
 [dependency-groups]
-dev = ["ruff", "hatchling"]
+dev = [
+    "ruff",
+    "hatchling",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/python_mscl"]
@@ -36,7 +39,7 @@ exclude = ["mscl_release_assets/", "uv.lock", "main.py", "src/python_mscl/_mscl.
 "src/python_mscl/mscl.py"]
 
 [build-system]
-requires = ["hatchling", "requests", "pygithub"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 # [[tool.uv.index]]

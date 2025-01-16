@@ -46,7 +46,7 @@ wheels = [
 
 [[package]]
 name = "python-mscl"
-version = "67.0.0"
+version = "67.0.0.1"
 source = { editable = "." }
 
 [package.dev-dependencies]

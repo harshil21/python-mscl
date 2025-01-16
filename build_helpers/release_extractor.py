@@ -7,6 +7,7 @@ from pathlib import Path
 MSCL_VERSION = "v67.0.0"
 """The mscl version to extract."""
 
+
 class ReleaseExtractor:
     """Will extract the .deb and .zip releases for the mscl library."""
 
@@ -88,7 +89,7 @@ class ReleaseExtractor:
         file_relative = file.absolute().relative_to(mscl_versioned_dir, walk_up=True)
 
         # Extract the .zip file
-        subprocess.run(["unzip", str(file_relative)], cwd=mscl_versioned_dir, check=True)  # noqa: S603, S607
+        subprocess.run(["unzip", str(file_relative)], cwd=mscl_versioned_dir, check=True)
 
         found_mscl_py = list(mscl_versioned_dir.rglob("mscl.py"))
         found_mscl_pyd = list(mscl_versioned_dir.rglob("_mscl.pyd"))
