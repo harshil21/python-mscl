@@ -43,10 +43,10 @@ exclude = ["mscl_release_assets/", "uv.lock", "main.py", "src/python_mscl/_mscl.
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[[tool.uv.index]]
-name = "testpypi"
-url = "https://test.pypi.org/simple/"
-publish-url = "https://test.pypi.org/legacy/"
+# [[tool.uv.index]]
+# name = "testpypi"
+# url = "https://test.pypi.org/simple/"
+# publish-url = "https://test.pypi.org/legacy/"
 
 
 # RUFF:
