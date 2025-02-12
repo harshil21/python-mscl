@@ -91,6 +91,7 @@ class ReleaseExtractor:
         # Extract the .zip file
         with ZipFile(file, "r") as zip_ref:
             zip_ref.extractall(mscl_versioned_dir)
+            print("Extracted the zip file.")
 
         found_mscl_py = list(mscl_versioned_dir.rglob("mscl.py"))
         found_mscl_pyd = list(mscl_versioned_dir.rglob("_mscl.pyd"))
@@ -111,6 +112,15 @@ class ReleaseExtractor:
                 print(f"Skipping deletion of {f}")
                 continue
             if f.is_dir():
+                print(f"Deleting the directory {f}")
                 shutil.rmtree(f)
             else:
+                print(f"Deleting {f}")
                 f.unlink()
+
+        # Confirm that the files still exist after deleting the rest:
+        found_mscl_py = list(mscl_versioned_dir.rglob("mscl.py"))
+        found_mscl_pyd = list(mscl_versioned_dir.rglob("_mscl.pyd"))
+
+        if not found_mscl_py or not found_mscl_pyd:
+            raise FileNotFoundError(f"Deleted mscl.py or _mscl.pyd in {mscl_versioned_dir}!")
