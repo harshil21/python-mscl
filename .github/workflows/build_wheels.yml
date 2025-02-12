@@ -48,7 +48,7 @@ jobs:
         run: |
           uv init --no-workspace test
           cd test
-          uv add ../dist/*.whl
+          uv add "$(python -c 'import glob; print(glob.glob("../dist/*.whl")[0])')"
 
       - name: Verify installation
         run: uv run -- python -c "from python_mscl import mscl"
