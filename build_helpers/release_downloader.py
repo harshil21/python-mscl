@@ -48,6 +48,7 @@ class GithubDownloader:
         output_path.mkdir(parents=True, exist_ok=True)
 
         asset: GitReleaseAsset
+        print(f"Downloading release assets for {only_release=}")
         for asset in release.get_assets():
             # Don't download the "Documentation" or "Examples"
             if "Documentation" in asset.name or "Examples" in asset.name:

@@ -18,6 +18,7 @@ def main(github_actions: bool = False) -> None:
     """
     gh = GithubDownloader()
     if github_actions:
+        print(f"Downloading on {sys.version_info=}, {platform.machine()=}")
         gh.download_release_assets(
             ReleaseAsset(
                 python_version=f"Python{sys.version_info.major}.{sys.version_info.minor}",

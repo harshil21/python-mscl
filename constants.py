@@ -33,6 +33,6 @@ MACHINE_MAPPING_TO_ARCH = {
     "aarch64": "arm64",
     "armv7l": "armhf",
     # Windows:
-    "AMD64": "Windows-x64",
-    "x86": "Windows-x86",
+    "AMD64": "Windows_x64",
+    "x86": "Windows_x86",
 }
