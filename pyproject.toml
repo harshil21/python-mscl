@@ -57,7 +57,7 @@ show-fixes = true
 exclude = ["mscl_release_assets/"]
 
 [tool.ruff.lint]
-ignore = ["ISC001", "S603", "S605", "S607", "PLR0912"]
+ignore = ["ISC001", "S603", "S605", "S607", "PLR0912", "T201"]
 select = ["E", "F", "I", "PL", "UP", "RUF", "PTH", "C4", "B", "PIE", "SIM", "RET", "RSE",
           "G", "ISC", "PT", "ASYNC", "TCH", "SLOT", "PERF", "PYI", "FLY", "AIR", "Q", "INP", 
           "W", "YTT", "DTZ", "ARG", "T20", "FURB", "D100", "D101", "D300", "D418",

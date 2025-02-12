@@ -50,6 +50,8 @@ def main(github_actions: bool = False) -> None:
 
 if __name__ == "__main__":
     if os.getenv("GITHUB_ACTIONS", "false") == "true":
+        print("Building in Github Actions environment.")
         main(github_actions=True)
     else:
+        print("Building locally")
         main()

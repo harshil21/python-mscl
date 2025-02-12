@@ -46,7 +46,7 @@ jobs:
 
       - name: Build the wheels
         run: |
-          uv run build_wheels.py
+          uv run run_build.py
 
       # There should be only one wheel so it should work:
       - name: Initialize test environment and install wheel
