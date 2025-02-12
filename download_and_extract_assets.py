@@ -16,16 +16,16 @@ def main(github_actions: bool = False) -> None:
         the script will download and extract the release asset of only the python version and
         architecture and OS type detected.
     """
-    gh = GithubDownloader()
-    if github_actions:
-        gh.download_release_assets(
-            ReleaseAsset(
-                python_version=f"Python{sys.version_info.major}.{sys.version_info.minor}",
-                arch=MACHINE_MAPPING_TO_ARCH.get(platform.machine()),
-            )
-        )
-    else:
-        gh.download_release_assets()
+    # gh = GithubDownloader()
+    # if github_actions:
+    #     gh.download_release_assets(
+    #         ReleaseAsset(
+    #             python_version=f"Python{sys.version_info.major}.{sys.version_info.minor}",
+    #             arch=MACHINE_MAPPING_TO_ARCH.get(platform.machine()),
+    #         )
+    #     )
+    # else:
+    #     gh.download_release_assets()
 
     re = ReleaseExtractor()
     re.extract_assets()

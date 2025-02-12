@@ -1,6 +1,7 @@
 """Extracts the .deb and .zip releases for the mscl library."""
 
 import os
+import shutil
 import subprocess
 from pathlib import Path
 from zipfile import ZipFile
@@ -83,7 +84,7 @@ class ReleaseExtractor:
 
         # If output directory exists, remove it:
         if mscl_versioned_dir.exists():
-            os.system(f"rm -rf {mscl_versioned_dir}")
+            shutil.rmtree(mscl_versioned_dir)
 
         mscl_versioned_dir.mkdir(parents=True, exist_ok=True)
 
@@ -107,8 +108,9 @@ class ReleaseExtractor:
         # Delete the remaining files in mscl_versioned_dir:
         for f in mscl_versioned_dir.iterdir():
             if f.stem in (mscl_py.stem, mscl_pyd.stem):
+                print(f"Skipping deletion of {f}")
                 continue
             if f.is_dir():
-                os.system(f"rm -rf {f}")
+                shutil.rmtree(f)
             else:
                 f.unlink()
