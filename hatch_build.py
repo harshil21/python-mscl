@@ -40,8 +40,8 @@ class CustomBuildHook(BuildHookInterface):
         "amd64": "manylinux2014_x86_64",
         "arm64": "manylinux2014_aarch64",
         "armhf": "manylinux2014_armv7l",
-        "Windows-x64": "win_amd64",
-        "Windows-x86": "win32",
+        "Windows_x64": "win_amd64",
+        "Windows_x86": "win32",
     }
     """The mapping of architectures (in the folder name) to the platform tags for the wheel."""
 
@@ -92,7 +92,7 @@ class CustomBuildHook(BuildHookInterface):
         self.remove_existing_files(Path("src/python_mscl/"), ["_mscl.so", "_mscl.pyd", "mscl.py"])
 
         # Copy files from mscl_release_assets/folder_name to src/mscl/:
-        p = Path("mscl_release_assets") / folder_name
+        p = (Path("mscl_release_assets") / folder_name).absolute()
 
         shutil.copy(p / "mscl.py", "src/python_mscl/")
         if BUILD_ARCH.startswith("Windows"):  # Windows uses _mscl.pyd

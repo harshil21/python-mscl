@@ -79,7 +79,7 @@ class ReleaseExtractor:
         # Create a directory to extract the .zip file. Syntax: mscl-<arch>-<python-ver>-<mscl-ver>
         parts = file.stem.split("_")
         arch, py_ver = parts[2], parts[3]
-        mscl_versioned_name = f"mscl-Windows-{arch}-{py_ver}-{MSCL_VERSION}"
+        mscl_versioned_name = f"mscl-Windows_{arch}-{py_ver}-{MSCL_VERSION}"
         mscl_versioned_dir = cwd / self.asset_dir / mscl_versioned_name
 
         # If output directory exists, remove it:

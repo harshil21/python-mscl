@@ -36,7 +36,7 @@ def main(github_actions: bool = False) -> None:
     # See the file names in the extracted folder for the exact names:
     # This must be the same as the dictionary in the hatch_build.py file
     python_versions = ["Python3.9", "Python3.10", "Python3.11", "Python3.12", "Python3.13"]
-    build_architectures = ["amd64", "arm64", "armhf", "Windows-x64", "Windows-x86"]
+    build_architectures = ["amd64", "arm64", "armhf", "Windows_x64", "Windows_x86"]
 
     if github_actions:
         detected_python_version = f"Python{sys.version_info.major}.{sys.version_info.minor}"

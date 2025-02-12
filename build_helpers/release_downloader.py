@@ -68,6 +68,7 @@ class GithubDownloader:
                     continue
 
             self.download_asset(output_path, asset)
+            print(f"Downloaded {asset.name}")
 
     def download_asset(self, output_path: Path, asset: GitReleaseAsset) -> None:
         response = requests.get(asset.browser_download_url, timeout=15)
