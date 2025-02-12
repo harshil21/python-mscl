@@ -1,32 +1,67 @@
 """Specifies a hatch build hook to create the wheel for mscl."""
 
-import platform
+import os
 import shutil
-import sys
 from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent))
+from typing import ClassVar
 
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 
-from build_helpers.release_downloader import GithubDownloader
+# This is specified here instead of in the constants since we get import errors:
+MSCL_VERSION = "v67.0.1"
+"""The mscl version to build the wheels from."""
 
-MSCL_VERSION = "v67.0.0"
-"""The mscl version to build the wheels of."""
+BUILD_ARCH = os.getenv("BUILD_ARCH", "false")
+"""The build architecture to use for the wheels. This determines the tag for the wheel.
+
+This will be the arch in folder name (e.g., amd64, arm64, armhf, Windows-x64, Windows-x86).
+"""
+
+PYTHON_BUILD_VERSION = os.getenv("PYTHON_BUILD_VERSION", "false")
+"""The Python build version to use for the wheels. This determines the tag for the wheel.
+
+This will be the python version in folder name (e.g., Python3.9, Python3.11, etc).
+"""
 
 
 class CustomBuildHook(BuildHookInterface):
     """Build hook to build wheels from the extracted .deb/.zip files."""
 
-    def _python_tag(self) -> str:
-        """Generate the Python tag (e.g., py39 for Python 3.9)."""
-        major = sys.version_info.major
-        minor = sys.version_info.minor
-        return f"cp{major}{minor}"
+    PYTHON_VER_MAPPING: ClassVar[dict[str, str]] = {
+        "Python3.9": "cp39",
+        "Python3.10": "cp310",
+        "Python3.11": "cp311",
+        "Python3.12": "cp312",
+        "Python3.13": "cp313",
+    }
+    """The mapping of Python versions of the folder to the Python tags for the wheel."""
 
-    def _platform_tag(self) -> str:
+    PYTHON_BUILD_MAPPING: ClassVar[dict[str, str]] = {
+        "amd64": "manylinux2014_x86_64",
+        "arm64": "manylinux2014_aarch64",
+        "armhf": "manylinux2014_armv7l",
+        "Windows_x64": "win_amd64",
+        "Windows_x86": "win32",
+    }
+    """The mapping of architectures (in the folder name) to the platform tags for the wheel."""
+
+    def _python_tag(self) -> str | None:
+        """Generate the Python tag (e.g., py39 for Python 3.9)."""
+        try:
+            return self.PYTHON_VER_MAPPING.get(PYTHON_BUILD_VERSION)
+        except KeyError as e:
+            raise RuntimeError(f"Unknown Python version: {PYTHON_BUILD_VERSION}") from e
+
+    def _platform_tag(self) -> str | None:
         """Generate the platform tag (e.g., linux_x86_64)."""
-        return platform.system().lower() + "_" + platform.machine()
+        try:
+            return self.PYTHON_BUILD_MAPPING.get(BUILD_ARCH)
+        except KeyError as e:
+            raise RuntimeError(f"Unknown platform: {BUILD_ARCH}") from e
+
+    def _make_tag(self) -> str:
+        """Generate the tag for the wheel (e.g., py39-linux_x86_64)."""
+        return f"{self._python_tag()}-{self._python_tag()}-{self._platform_tag()}"
 
     def initialize(self, version, build_data):
         """
@@ -34,76 +69,37 @@ class CustomBuildHook(BuildHookInterface):
         We can download & extract the .deb here, and place
         mscl.py and _mscl.so into src/mscl_pip/.
         """
-        if self.target_name != "wheel":
+        # Don't run build hook when a user is installing the wheel:
+        if PYTHON_BUILD_VERSION == "false" and BUILD_ARCH == "false":
             return
 
         build_data["pure_python"] = False
-        self.app.display_info(f"Running on {version=} and {build_data=}")
-        self.app.display_info(self.target_name)
-
-        # --- STEP 1: Determine which python version and arch we are on: ---
-        # a) Python version:
-        # syntax: Python<MAJOR>.<MINOR>
-
-        py_version = f"Python{sys.version_info.major}.{sys.version_info.minor}"
-
-        # b) Architecture:
-        # possible values: amd64, arm64, armhf.
-
-        arch = platform.machine()
-        if arch == "x86_64":
-            mscl_arch = "amd64"
-        elif arch == "aarch64":
-            mscl_arch = "arm64"
-        elif arch == "armv7l":
-            mscl_arch = "armhf"
-        elif arch == "AMD64":  # Windows
-            mscl_arch = "x64"
-        elif arch == "x86":  # Windows
-            mscl_arch = "x86"
-        else:
-            raise RuntimeError(f"Unknown architecture: {arch}")
-
-        # --- STEP 2: Download the 2 mscl files (mscl.py and _mscl.so) from the git repo: ---
-        # Folder name: mscl-<mscl_arch>-<python-ver>-<mscl-ver>  -> Linux
-        # Folder name: mscl-Windows-<mscl_arch>-<python-ver>-<mscl-ver>  -> Windows
-
-        # a) Create the folder name:
-
-        if platform.system() == "Linux":
-            build_data["tag"] = f"{self._python_tag()}-{self._python_tag()}-{self._platform_tag()}"
-            folder_name = f"mscl-{mscl_arch}-{py_version}-{MSCL_VERSION}"
-
-        # Windows is best effort matching since there's only python 3.11 available for v67.0.0:
-        else:
-            if mscl_arch == "x64":
-                build_data["tag"] = "py3-none-win_amd64"
-            elif mscl_arch == "x86":
-                build_data["tag"] = "py3-none-win32"
-            folder_name = f"mscl-Windows-{mscl_arch}-Python3.11-{MSCL_VERSION}"
-
-        # b) Use PyGithub to download the files from the folder:
-        self.app.display_waiting(f"Downloading files for {folder_name}...")
-
-        gh = GithubDownloader()
-        gh.download_assets_from_folder(
-            tag=MSCL_VERSION,
-            folder_name=f"mscl_release_assets/{folder_name}",
+        self.app.display_info(
+            f"Running on {version=} on {build_data=}, with "
+            f"{PYTHON_BUILD_VERSION=} and {BUILD_ARCH=}"
         )
 
-        self.app.display_success("Downloaded files successfully.")
+        # --- STEP 1: Determine which python version and arch we are on: ---
+        # Build the folder name based on the python version and arch in the environment variables.
+
+        folder_name = f"mscl-{BUILD_ARCH}-{PYTHON_BUILD_VERSION}-{MSCL_VERSION}"
+
+        build_data["tag"] = self._make_tag()
 
         # --- STEP 3: Copy the files ("_mscl.so" & "mscl.py") to the src/mscl/ directory: ---
         # Move from root (i.e. cwd) to src/mscl
-        # Use shutil.move() to move the files.
 
         self.remove_existing_files(Path("src/python_mscl/"), ["_mscl.so", "_mscl.pyd", "mscl.py"])
-        shutil.move("mscl.py", "src/python_mscl/")
-        if platform.system() == "Windows":
-            shutil.move("_mscl.pyd", "src/python_mscl/")
+
+        # Copy files from mscl_release_assets/folder_name to src/mscl/:
+        p = (Path("mscl_release_assets") / folder_name).absolute()
+
+        shutil.copy(p / "mscl.py", "src/python_mscl/")
+        if BUILD_ARCH.startswith("Windows"):  # Windows uses _mscl.pyd
+            shutil.copy(p / "_mscl.pyd", "src/python_mscl/")
             build_data["artifacts"] = ["_mscl.pyd", "mscl.py"]
         else:
-            shutil.move("_mscl.so", "src/python_mscl/")
+            shutil.copy(p / "_mscl.so", "src/python_mscl/")
             build_data["artifacts"] = ["_mscl.so", "mscl.py"]
 
         self.app.display_success("Moved files to src/python_mscl/ successfully. Building wheel...")

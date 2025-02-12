@@ -2,10 +2,9 @@
 
 Unofficial Python package for the [Microstrain Communication Library](https://github.com/LORD-MicroStrain/MSCL/tree/master).
 
-This library just makes it so that we can install the MSCL library using pip. Wheels are not provided. This will fetch the necessary files for your architecture and python
-version, and then build the wheel for you.
+This library just makes it so that we can install the MSCL library using pip, and directly provides the wheels!
 
-It is therefore recommended to use a cache for your CI or package manager, unless you're okay with the ~20MB download every time you run your CI.
+Only Python 3.x wheels are provided. If you need Python 2.x wheels, please open an issue.
 
 ### Installation
 
@@ -20,11 +19,6 @@ from python_mscl import mscl
 
 # ... use the MSCL library as you normally would
 ```
-
-### Windows support:
-
-The latest mscl version (v67.0.0) only has a .zip for python 3.11. It has been confirmed that it does not work on other python versions (You would get an import error). However the build itself would still go through.
-
 
 ### Versioning system:
 
@@ -44,13 +38,17 @@ The below steps assume you have [`uv`](https://docs.astral.sh/uv/) installed.
 
 1. Clone the repo and `cd` into it.
 2. Optional: Create a .env file and insert your GITHUB_TOKEN= to make requests to the GitHub API.
-3. Edit & run `uv run main.py` to fetch the latest tagged MSCL releases and extract them.
-4. Run `uv build`, which will build the source distribution and wheel for your python
-version and architecture.
+3. Edit & run `uv run download_and_extract_assets.py` to fetch the latest tagged MSCL releases and extract them.
+4. Run `uv run run_build.py`, which will build the source distribution and wheel for your python
+version and architecture. The wheels will be placed in the `dist/` directory.
 
 Notes for me, the maintainer:
-5. Optional: Run `uv publish` to publish the package to PyPI. To upload to TestPyPI, uncomment lines in `pyproject.toml`, and run `uv publish --index testpypi dist/*.tar.gz`.
-6. Optional: To check if the package worked correctly: `uv add --index https://test.pypi.org/simple/ --index-strategy unsafe-best-match python-mscl` in a new uv project directory.
+5. Make sure that the constants in `constants.py` are updated, and that the MSCL repo still follows their
+versioning system. If not, update rest of the files accordingly.
+
+6. Optional: Run `uv publish` to publish the package to PyPI. To upload to TestPyPI, uncomment lines in `pyproject.toml`, and run `uv publish --index testpypi dist/*.whl`.
+
+7. Optional: To check if the package worked correctly: `uv add --index https://test.pypi.org/simple/ --index-strategy unsafe-best-match python-mscl` in a new uv project directory.
 
 
 ## Issues:

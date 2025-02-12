@@ -15,6 +15,7 @@ wheels/
 # Exclude local .deb and .zip files from mscl:
 mscl_release_assets/*.zip
 mscl_release_assets/*.deb
+mscl_release_assets/
 
 # VSCode:
 .vscode/
@@ -22,3 +23,4 @@ mscl_release_assets/*.deb
 # Exclude build downloaded mscl files:
 src/python_mscl/mscl.py
 src/python_mscl/_mscl.so
+src/python_mscl/mscl.pyd

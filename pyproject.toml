@@ -1,6 +1,6 @@
 [project]
 name = "python-mscl"
-version = "67.0.0"
+version = "67.0.1.0"
 description = "Easy to install python wrapper for the MSCL library."
 readme = "README.md"
 authors = [
@@ -23,7 +23,11 @@ classifiers = [
 dependencies = []
 
 [dependency-groups]
-dev = ["ruff", "hatchling"]
+dev = [
+    "ruff",
+    "hatchling",
+    "pygithub>=2.5.0",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/python_mscl"]
@@ -33,10 +37,10 @@ path = "hatch_build.py"
 
 [tool.hatch.build.targets.sdist]
 exclude = ["mscl_release_assets/", "uv.lock", "main.py", "src/python_mscl/_mscl.so", 
-"src/python_mscl/mscl.py"]
+"src/python_mscl/mscl.py", "src/python_mscl/mscl.pyd"]
 
 [build-system]
-requires = ["hatchling", "requests", "pygithub"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 # [[tool.uv.index]]
@@ -53,7 +57,7 @@ show-fixes = true
 exclude = ["mscl_release_assets/"]
 
 [tool.ruff.lint]
-ignore = ["ISC001", "S603", "S605", "S607", "PLR0912"]
+ignore = ["ISC001", "S603", "S605", "S607", "PLR0912", "T201"]
 select = ["E", "F", "I", "PL", "UP", "RUF", "PTH", "C4", "B", "PIE", "SIM", "RET", "RSE",
           "G", "ISC", "PT", "ASYNC", "TCH", "SLOT", "PERF", "PYI", "FLY", "AIR", "Q", "INP", 
           "W", "YTT", "DTZ", "ARG", "T20", "FURB", "D100", "D101", "D300", "D418",
