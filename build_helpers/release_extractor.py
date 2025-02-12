@@ -3,16 +3,16 @@
 import os
 import subprocess
 from pathlib import Path
+from zipfile import ZipFile
 
-MSCL_VERSION = "v67.0.0"
-"""The mscl version to extract."""
+from constants import ASSET_DIRECTORY, MSCL_VERSION
 
 
 class ReleaseExtractor:
     """Will extract the .deb and .zip releases for the mscl library."""
 
     def __init__(self):
-        self.asset_dir = Path("mscl_release_assets")
+        self.asset_dir = Path(ASSET_DIRECTORY)
 
     def extract_assets(self):
         """Extracts the .deb and .zip releases into the same directory."""
@@ -86,10 +86,10 @@ class ReleaseExtractor:
             os.system(f"rm -rf {mscl_versioned_dir}")
 
         mscl_versioned_dir.mkdir(parents=True, exist_ok=True)
-        file_relative = file.absolute().relative_to(mscl_versioned_dir, walk_up=True)
 
         # Extract the .zip file
-        subprocess.run(["unzip", str(file_relative)], cwd=mscl_versioned_dir, check=True)
+        with ZipFile(file, "r") as zip_ref:
+            zip_ref.extractall(mscl_versioned_dir)
 
         found_mscl_py = list(mscl_versioned_dir.rglob("mscl.py"))
         found_mscl_pyd = list(mscl_versioned_dir.rglob("_mscl.pyd"))

@@ -1,4 +1,4 @@
-name: Build wheels
+name: Download, extract, build, and test wheels
 
 on:
   pull_request:
@@ -10,13 +10,13 @@ on:
 
 jobs:
   build-wheels:
-    name: Build wheels
+    name: Download, extract, build, and wheels
     runs-on: ${{ matrix.os }}
     timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, ubuntu-24.04-arm]
         python-version: [3.9, 3.11, 3.13]
         exclude:
           - os: windows-latest
@@ -39,11 +39,17 @@ jobs:
 
       - name: Install the project
         run: uv sync
+      
+      - name: Download and extract the mscl assets
+        run: |
+          uv run download_and_extract_assets.py
 
-      - name: Build the wheel
-        run: uv build --wheel
+      - name: Build the wheels
+        run: |
+          uv run build_wheels.py
 
-      - name: Initialize test environment
+      # There should be only one wheel so it should work:
+      - name: Initialize test environment and install wheel
         run: |
           uv init --no-workspace test
           cd test

@@ -8,6 +8,8 @@ from github import Github
 from github.GitRelease import GitRelease
 from github.GitReleaseAsset import GitReleaseAsset
 
+from constants import ASSET_DIRECTORY, ReleaseAsset
+
 
 class GithubDownloader:
     """Manages downloading the Github release assets for the mscl library, along with the
@@ -18,6 +20,7 @@ class GithubDownloader:
         self.mscl_repo = "LORD-MicroStrain/MSCL"
         self.python_mscl_repo = "harshil21/python-mscl"
         self.latest_release = None
+        self.asset_dir = Path(ASSET_DIRECTORY)
 
     def get_latest_release(self) -> GitRelease:
         """Returns the latest stable release for the given repo."""
@@ -33,10 +36,15 @@ class GithubDownloader:
                 break
         return self.latest_release
 
-    def download_release_assets(self, output_dir: str):
-        """Downloads the release assets for the given repo and tag."""
+    def download_release_assets(self, only_release: ReleaseAsset | None = None) -> None:
+        """Downloads the release assets from the MSCL repository.
+
+        Args:
+            only_release: If set, only download the release asset for the given Python version and
+                architecture. If not set, download all the release assets.
+        """
         release = self.get_latest_release()
-        output_path = Path(output_dir)
+        output_path = Path(self.asset_dir)
         output_path.mkdir(parents=True, exist_ok=True)
 
         asset: GitReleaseAsset
@@ -51,22 +59,16 @@ class GithubDownloader:
             if "3" not in asset.name:
                 continue
 
+            # Extract the python version, arch, and platform from the only_release, if set:
+            if only_release:
+                if only_release.python_version not in asset.name:
+                    continue
+                if only_release.arch not in asset.name:
+                    continue
+
             self.download_asset(output_path, asset)
 
     def download_asset(self, output_path: Path, asset: GitReleaseAsset) -> None:
         response = requests.get(asset.browser_download_url, timeout=15)
         asset_path = output_path / asset.name
         asset_path.write_bytes(response.content)
-
-    def download_assets_from_folder(self, tag: str, folder_name: str) -> None:
-        """Downloads all the files under the `folder_name` for the given tag, from the
-        root of the repository."""
-
-        repo = self.github.get_repo(self.python_mscl_repo)
-        contents = repo.get_contents(folder_name, ref=tag)
-
-        for content in contents:
-            if content.type == "file":
-                response = requests.get(content.download_url, timeout=15)
-                file_path = Path(content.name)
-                file_path.write_bytes(response.content)

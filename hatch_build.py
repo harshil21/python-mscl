@@ -7,8 +7,9 @@ from typing import ClassVar
 
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 
-MSCL_VERSION = "v67.0.0"
-"""The mscl version to build the wheels of."""
+# This is specified here instead of in the constants since we get import errors:
+MSCL_VERSION = "v67.0.1"
+"""The mscl version to build the wheels from."""
 
 BUILD_ARCH = os.getenv("BUILD_ARCH", "false")
 """The build architecture to use for the wheels. This determines the tag for the wheel.

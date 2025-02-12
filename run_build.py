@@ -2,7 +2,11 @@
 
 import itertools
 import os
+import platform
 import subprocess
+import sys
+
+from constants import MACHINE_MAPPING_TO_ARCH
 
 
 def run_hatch_build(python_version: str, build_arch: str) -> None:
@@ -17,24 +21,35 @@ def run_hatch_build(python_version: str, build_arch: str) -> None:
     subprocess.run(["uv", "build", "--wheel"], check=True, env=env)
 
 
-def main() -> None:
-    """Entry point to run the hatch build for the given Python version and architecture."""
+def main(github_actions: bool = False) -> None:
+    """Entry point to run the hatch build for the given Python version and architecture.
+
+    Make sure to have first downloaded and extracted the release assets from the Github repository.
+    i.e. run `uv run download_and_extract_assets.py` before running this script.
+
+    Args:
+        github_actions: If the script is running in a Github Actions environment. If true, the
+            script will run the hatch build for only the Python version and architecture detected.
+    """
 
     # Iterate through the Python versions and architectures:
     # See the file names in the extracted folder for the exact names:
+    # This must be the same as the dictionary in the hatch_build.py file
     python_versions = ["Python3.9", "Python3.10", "Python3.11", "Python3.12", "Python3.13"]
     build_architectures = ["amd64", "arm64", "armhf", "Windows-x64", "Windows-x86"]
 
-    for python_version, build_arch in itertools.product(python_versions, build_architectures):
-        # Special case for windows:
-        if "Windows" in build_arch:
-            # Only Python 3.11 is supported for Windows:
-            if python_version != "Python3.11":
-                continue
-            run_hatch_build(python_version, build_arch)
-        else:
+    if github_actions:
+        detected_python_version = f"Python{sys.version_info.major}.{sys.version_info.minor}"
+        detected_arch = MACHINE_MAPPING_TO_ARCH.get(platform.machine())
+        run_hatch_build(detected_python_version, detected_arch)
+
+    else:
+        for python_version, build_arch in itertools.product(python_versions, build_architectures):
             run_hatch_build(python_version, build_arch)
 
 
 if __name__ == "__main__":
-    main()
+    if os.getenv("GITHUB_ACTIONS", "false") == "true":
+        main(github_actions=True)
+    else:
+        main()
