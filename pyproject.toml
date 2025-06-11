@@ -1,6 +1,6 @@
 [project]
 name = "python-mscl"
-version = "67.0.1.0"
+version = "67.1.0.0"
 description = "Easy to install python wrapper for the MSCL library."
 readme = "README.md"
 authors = [

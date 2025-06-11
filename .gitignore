@@ -23,4 +23,4 @@ mscl_release_assets/
 # Exclude build downloaded mscl files:
 src/python_mscl/mscl.py
 src/python_mscl/_mscl.so
-src/python_mscl/mscl.pyd
+src/python_mscl/_mscl.pyd
