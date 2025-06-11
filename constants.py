@@ -22,7 +22,7 @@ ASSET_DIRECTORY = Path("mscl_release_assets")
 
 
 # Keep this the same as the one in `hatch_build.py`!
-MSCL_VERSION = "v67.0.1"
+MSCL_VERSION = "v67.1.0"
 """The mscl version to extract from the `ASSET_DIRECTORY`. The
 downloader will download the latest version despite this version number."""
 

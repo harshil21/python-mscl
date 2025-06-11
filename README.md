@@ -1,5 +1,7 @@
 # python-mscl
 
+[![PyPI Downloads](https://static.pepy.tech/badge/python-mscl/week)](https://pepy.tech/projects/python-mscl)
+
 Unofficial Python package for the [Microstrain Communication Library](https://github.com/LORD-MicroStrain/MSCL/tree/master).
 
 This library just makes it so that we can install the MSCL library using pip, and directly provides the wheels!
@@ -43,6 +45,7 @@ The below steps assume you have [`uv`](https://docs.astral.sh/uv/) installed.
 version and architecture. The wheels will be placed in the `dist/` directory.
 
 Notes for me, the maintainer:
+
 5. Make sure that the constants in `constants.py` are updated, and that the MSCL repo still follows their
 versioning system. If not, update rest of the files accordingly.
 
