@@ -1,6 +1,6 @@
 # python-mscl
 
-# ARCHIVED: There is now an official mscl library: [`pymscl`](https://pypi.org/pymscl). Please use that library instead.
+# ARCHIVED: There is now an official mscl library: [`pymscl`](https://pypi.org/project/pymscl). Please use that library instead.
 
 [![PyPI Downloads](https://static.pepy.tech/badge/python-mscl/week)](https://pepy.tech/projects/python-mscl)
 
